@@ -4,6 +4,9 @@ This file will contain your the code for your problems.
 
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, FancyBboxPatch
+import random
 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
@@ -110,3 +113,36 @@ class TicTacToe:
                
       cv2.imshow('TicTacToe',screen)
       cv2.waitKey(ms)
+
+class Mancala:
+   def __init__(self):
+      self.state = np.array([4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0])
+      self.ticks = -1
+
+   def showState(self):
+      fig, ax = plt.subplots(figsize = (7,3))
+      ax.set_xlim(-1, 8)
+      ax.set_ylim(-1, 2)
+      #plt.axis('off')
+      ax.set_aspect('equal')
+
+      #Create board
+      board = FancyBboxPatch((0,0), 8, 2, boxstyle = 'round', color = '#e8d9c4')
+      left_store = FancyBboxPatch((0,0), 0.2, 1.4, boxstyle = 'round', color = '#d1bd9b')
+      right_store = FancyBboxPatch((0,0), 6.8, 1.4, boxstyle = 'round', color = '#d1bd9b')
+
+      colors = ['#e06a4f', '#337f1d', '#20bab2', '#6f4587']
+      vert_spot = 0
+      for n in self.state:
+         if n > 7: vert_spot = 1
+         if n > 7:
+            horz_spot = n - 7
+         else: horz_spot = n
+         circ = Circle([horz_spot, vert_spot], radius = 0.4, color = '#d1bd9b')
+         ax.add_patch(circ)
+         
+      plt.savefig("test_board.png", bbox_inches = 'tight')
+
+
+   
+      
