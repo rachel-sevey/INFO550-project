@@ -116,32 +116,102 @@ class TicTacToe:
 
 class Mancala:
    def __init__(self):
+      #Array indices 6 and 13 represent the stores for player 0 and 1.
       self.state = np.array([4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0])
       self.ticks = -1
 
+   def getLegalMoves(self, state=None):
+      if state is None:
+         state = self.state
+      moves = []
+      #TODO: figure out who the current player is. 
+      #TODO: Get the legal moves for the current player 
+      return moves
+
+   def getSuccessor(self, move, state):
+      #TODO: Get a successor state after the given move is made
+      #Don't actually apply the move, just plan a hypothetical action
+      return state
+
+   def doMove(self, move):
+      #Apply the move the the board, update the move counter. I think this one is finished?
+      self.state = self.getSuccessor(move,self.state)
+      self.ticks+=1
+
+   def isTerminal(self, state=None):
+      if state is None:
+         state = self.state         
+      terminal = False
+      val = self.evalTerminal(state)
+      #TODO: Check val to see if the game is over
+      #Val is set in the evalterminal function based on the who cleared their side
+      return terminal
+
+   def evalTerminal(self, state=None):
+      if state is None:
+         state = self.state
+      val = 0
+      #TODO: Who won the game? Do val 1 for player 0, -1 for player 1. Keep 0 for tie
+      return val
+
+   def getWinner(self, state=None):
+      if state is None:
+         state = self.state
+      val = self.evalTerminal(state)
+      #Change the win values to indicate which player won. -1 is a tie. 
+      if val==1:
+         return 0 
+      elif val==-1:
+         return 1
+      else:
+         return -1
+
+   #TODO need to implement cv2
    def showState(self):
+      random.seed(27)
       fig, ax = plt.subplots(figsize = (7,3))
-      ax.set_xlim(-1, 8)
+      ax.set_xlim(-2, 7)
       ax.set_ylim(-1, 2)
-      #plt.axis('off')
+      plt.axis('off')
       ax.set_aspect('equal')
 
       #Create board
-      board = FancyBboxPatch((0,0), 8, 2, boxstyle = 'round', color = '#e8d9c4')
-      left_store = FancyBboxPatch((0,0), 0.2, 1.4, boxstyle = 'round', color = '#d1bd9b')
-      right_store = FancyBboxPatch((0,0), 6.8, 1.4, boxstyle = 'round', color = '#d1bd9b')
+      board = FancyBboxPatch((-1.4,-0.3), 7.8, 1.6, boxstyle = 'round', color = '#e8d9c4')
+      left_store = FancyBboxPatch((-1.1,-0.1), 0.15, 1.2, boxstyle = 'round', color = '#d1bd9b')
+      right_store = FancyBboxPatch((6,-0.1), 0.15, 1.2, boxstyle = 'round', color = '#d1bd9b')
+      ax.add_patch(board)
+      ax.add_patch(left_store)
+      ax.add_patch(right_store)
 
-      colors = ['#e06a4f', '#337f1d', '#20bab2', '#6f4587']
+      #Fill board with pits
       vert_spot = 0
-      for n in self.state:
-         if n > 7: vert_spot = 1
-         if n > 7:
-            horz_spot = n - 7
-         else: horz_spot = n
-         circ = Circle([horz_spot, vert_spot], radius = 0.4, color = '#d1bd9b')
-         ax.add_patch(circ)
-         
+      for pit_num in range(len(self.state)):
+         if pit_num > 6: vert_spot = 1
+         if pit_num > 6:
+            #Opposite side pits go from right to left
+            horz_spot = 12 - pit_num
+         #Close side pits go from left to right
+         else: horz_spot = pit_num
+         #For all pits except the stores, draw...
+         if (pit_num != 6 and pit_num != 13):
+            print(f"Pit {pit_num} is at ({horz_spot}, {vert_spot}) with {self.state[pit_num]} marbles.")
+            circ = Circle([horz_spot, vert_spot], radius = 0.4, color = '#d1bd9b')
+            ax.add_patch(circ)
+
+         #Fill pits and stores with marbles
+         for m in range(self.state[pit_num]):
+            random_x = random.uniform(-0.2, 0.2)
+            random_y = random.uniform(-0.2, 0.2)
+            marb = Circle([horz_spot + random_x, vert_spot + random_y], radius = 0.13, facecolor = "#2c659b", edgecolor = "#1a5083", alpha = 0.5)
+            ax.add_patch(marb)
+
+         #Add numbers of marbles
+         ax.annotate(str(pit_num), [horz_spot, vert_spot], fontsize = 9)
       plt.savefig("test_board.png", bbox_inches = 'tight')
+      plt.show(block = False)  
+      plt.pause(3)
+      plt.close()
+      
 
 
    

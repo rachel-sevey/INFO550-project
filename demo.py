@@ -14,10 +14,10 @@ algorithm and one player uses another. If your problem is snake, you might show 
 (whichever comes first).
 '''
 
-#Temporary disabling. Could not load the Qt platform plugin "xcb" for the GUI vis
+#Temporary disabling. 
 #demoGame = prb.Game(prb.TicTacToe(),alg.RandomAgent(),alg.RandomAgent())
 #demoGame.playGame()
 
 #Temporary testing visualization
 demoMancala = prb.Game(prb.Mancala(), 1, 2)
-#demoMancala.problem.showState()
+demoMancala.problem.showState()
