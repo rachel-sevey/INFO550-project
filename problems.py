@@ -51,6 +51,7 @@ class TicTacToe:
          for j in range(state.shape[1]):
             if state[i,j]==0:
                moves.append((mark,(i,j)))
+               #Adding a mark for a player + a move location, random agent just picks one of the options
       return moves             
    def getSuccessor(self, move, state):
       mark = move[0]
@@ -123,14 +124,45 @@ class Mancala:
    def getLegalMoves(self, state=None):
       if state is None:
          state = self.state
-      moves = []
-      #TODO: figure out who the current player is. 
-      #TODO: Get the legal moves for the current player 
+      moves = [] #Add in potential marbles to pick up
+      if self.ticks%2 != 0:
+         #Player 0's turn - I think, since -1 indicates the start of the game. 
+         #TODO: Actually this may not work because of extra turns; implement ticks carefully
+         for i in range(6):
+            if state[i] > 0:
+               moves.append(i)
+      else:
+         #PLayer 1's turn
+         for i in range(8,13):
+            if state[i] > 0:
+               moves.append(i)
+
       return moves
 
    def getSuccessor(self, move, state):
+      #Move is just a int location in the array
+      marb_count = state[move]
+      print(f"{marb_count} marbles in this chosen move")
+
+      #Take out the marbles
+      current_pit = move
+      state[move] = 0
+      was_empty = ""
+
+      #Disburse in the subsequent pits
+      for marb in range(marb_count):
+         current_pit += 1
+         if current_pit == 0:
+            was_empty = "yes"
+         state[current_pit] += 1
+
+      #Now, check and see if current pit is the store (get another move)
+      #Or if the current pit is in one that used to be empty - take opponents marbles
+      #Any other rules I need to add here?
+
       #TODO: Get a successor state after the given move is made
       #Don't actually apply the move, just plan a hypothetical action
+
       return state
 
    def doMove(self, move):
@@ -151,14 +183,27 @@ class Mancala:
       if state is None:
          state = self.state
       val = 0
-      #TODO: Who won the game? Do val 1 for player 0, -1 for player 1. Keep 0 for tie
+
+      #Who won the game? Do val 1 for player 0, -1 for player 1. Keep 0 for tie
+      if sum(state[0:6]) == 0:
+         #Player 0 cleared first, player 1 gets whatever is left on their own side
+         state[13] += sum(state[7:13])
+         state[7:13] = 0
+      elif sum(state[7:13]) == 0:
+         #Player 1 cleared first, player 0 gets whatever is left on their own side
+         state[6] += sum(state[0:6])
+         state[0:6] = 0
+      if state[6] > state[13]:
+         val = 1
+      elif state[13] > state[6]:
+         val = -1
       return val
 
    def getWinner(self, state=None):
       if state is None:
          state = self.state
       val = self.evalTerminal(state)
-      #Change the win values to indicate which player won. -1 is a tie. 
+      #Change the win values to indicate which player # won. -1 is a tie. 
       if val==1:
          return 0 
       elif val==-1:
