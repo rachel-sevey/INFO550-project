@@ -39,7 +39,8 @@ class Game:
 class TicTacToe:
    def __init__(self):
       self.state = np.zeros((3,3))      
-      self.ticks=-1      
+      self.ticks=-1 
+     
    def getLegalMoves(self, state=None):
       if state is None:
          state = self.state
@@ -119,21 +120,19 @@ class Mancala:
    def __init__(self):
       #Array indices 6 and 13 represent the stores for player 0 and 1.
       self.state = np.array([4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0])
-      self.ticks = -1
+      self.ticks = -1 #Shows actual move number, including extra turns
+      self.turn = 0 #Shows which player's turn it is, alternates between zero and one   
 
    def getLegalMoves(self, state=None):
       if state is None:
          state = self.state
       moves = [] #Add in potential marbles to pick up
-      if self.ticks%2 != 0:
-         #Player 0's turn - I think, since -1 indicates the start of the game. 
-         #TODO: Actually this may not work because of extra turns; implement ticks carefully
+      if self.turn == 0: #Player 0's turn
          for i in range(6):
             if state[i] > 0:
                moves.append(i)
-      else:
-         #PLayer 1's turn
-         for i in range(8,13):
+      else: #PLayer 1's turn
+         for i in range(7,13):
             if state[i] > 0:
                moves.append(i)
 
@@ -147,17 +146,49 @@ class Mancala:
       #Take out the marbles
       current_pit = move
       state[move] = 0
-      was_empty = ""
+      get_to_steal = False
+      extra_move = False
+      marbs_stolen = 0
 
       #Disburse in the subsequent pits
-      for marb in range(marb_count):
+      while (marb_count > 0):
          current_pit += 1
-         if current_pit == 0:
-            was_empty = "yes"
-         state[current_pit] += 1
+         
+         #Add marbles to everywhere but the opposing player's store
+         if self.turn == 0:
+            if current_pit != 13:
+               state[current_pit] += 1
+               marb_count -= 1
+         else:
+            if current_pit != 6:
+               state[current_pit] += 1
+               marb_count -= 1
+         if current_pit == 13:
+            #Reset to the other side of the array (go round the board)
+            current_pit = -1
+
+      #For each player, check and see if they landed in an empty pit on their own side (marb count now = 1), get to steal
+      if self.turn == 0 and state[current_pit] == 1 and current_pit in range(0,6):
+         get_to_steal = True
+      if self.turn == 1 and state[current_pit] == 1 and current_pit in range(7,13):
+               get_to_steal = True
 
       #Now, check and see if current pit is the store (get another move)
-      #Or if the current pit is in one that used to be empty - take opponents marbles
+      if current_pit == 6 or current_pit == 13:
+         extra_move = True #I think I need to return this? Or call get legal moves and successor again from this func
+
+      #If the current pit is in one that used to be empty - take opponents marbles plus the one that landed there
+      if get_to_steal == True:
+         opposite_pit = 12 - current_pit
+         marbs_stolen = state[opposite_pit]
+         state[opposite_pit] = 0 #Take them out
+         state[current_pit] = 0 #Take out last placed marble as well
+         #Place them in the correct player store, as well as the last marble in the current pit
+         if self.turn == 0:
+            state[6] += marbs_stolen + 1
+         else:
+            state[13] += marbs_stolen + 1
+
       #Any other rules I need to add here?
 
       #TODO: Get a successor state after the given move is made
@@ -166,17 +197,23 @@ class Mancala:
       return state
 
    def doMove(self, move):
-      #Apply the move the the board, update the move counter. I think this one is finished?
+      #Apply the move the the board, update the move counter, update which player's turn it is
       self.state = self.getSuccessor(move,self.state)
       self.ticks+=1
+      #Switch the player turn
+      if self.turn == 0:
+         self.turn = 1
+      else:
+         self.turn = 0
 
    def isTerminal(self, state=None):
       if state is None:
          state = self.state         
       terminal = False
       val = self.evalTerminal(state)
-      #TODO: Check val to see if the game is over
       #Val is set in the evalterminal function based on the who cleared their side
+      if val != 0:
+         terminal = True
       return terminal
 
    def evalTerminal(self, state=None):
