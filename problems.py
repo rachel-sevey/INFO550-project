@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, FancyBboxPatch
 import random
 
+#TODO: implement a self.current_player for repeat turns. 
+#GetSuccessor should return a tuple with a extra_turn bool
+#Need to update TicTacToe to match I think so the same agent can run both. 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
       self.problem = problem      
@@ -163,8 +166,9 @@ class Mancala:
             if current_pit != 6:
                state[current_pit] += 1
                marb_count -= 1
+
+   #Reset to the other side of the array (go round the board)
          if current_pit == 13:
-            #Reset to the other side of the array (go round the board)
             current_pit = -1
 
       #For each player, check and see if they landed in an empty pit on their own side (marb count now = 1), get to steal
@@ -189,12 +193,7 @@ class Mancala:
          else:
             state[13] += marbs_stolen + 1
 
-      #Any other rules I need to add here?
-
-      #TODO: Get a successor state after the given move is made
-      #Don't actually apply the move, just plan a hypothetical action
-
-      return state
+      return state #TODO ALSO EXTRA MOVE
 
    def doMove(self, move):
       #Apply the move the the board, update the move counter, update which player's turn it is
@@ -214,6 +213,7 @@ class Mancala:
       #Val is set in the evalterminal function based on the who cleared their side
       if val != 0:
          terminal = True
+      print(terminal)
       return terminal
 
    def evalTerminal(self, state=None):
@@ -221,7 +221,7 @@ class Mancala:
          state = self.state
       val = 0
 
-      #Who won the game? Do val 1 for player 0, -1 for player 1. Keep 0 for tie
+      #First, clear board entirely if one player cleared their side
       if sum(state[0:6]) == 0:
          #Player 0 cleared first, player 1 gets whatever is left on their own side
          state[13] += sum(state[7:13])
@@ -230,6 +230,9 @@ class Mancala:
          #Player 1 cleared first, player 0 gets whatever is left on their own side
          state[6] += sum(state[0:6])
          state[0:6] = 0
+      else: return val
+
+      #Now, if both sides are cleared, check the winner. val = 1 for player 0 win, -1 for player 1, 0 for tie
       if state[6] > state[13]:
          val = 1
       elif state[13] > state[6]:
@@ -242,14 +245,17 @@ class Mancala:
       val = self.evalTerminal(state)
       #Change the win values to indicate which player # won. -1 is a tie. 
       if val==1:
+         print("Player 0 won")
          return 0 
       elif val==-1:
+         print("Player 1 won")
          return 1
       else:
+         print("Tie")
          return -1
 
    #TODO need to implement cv2
-   def showState(self):
+   def showState(self, ms = 1000, state=None):
       random.seed(27)
       fig, ax = plt.subplots(figsize = (7,3))
       ax.set_xlim(-2, 7)
@@ -291,7 +297,7 @@ class Mancala:
          ax.annotate(str(pit_num), [horz_spot, vert_spot], fontsize = 9)
       plt.savefig("test_board.png", bbox_inches = 'tight')
       plt.show(block = False)  
-      plt.pause(3)
+      plt.pause(ms/1000)
       plt.close()
       
 

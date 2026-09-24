@@ -19,5 +19,5 @@ algorithm and one player uses another. If your problem is snake, you might show 
 #demoGame.playGame()
 
 #Temporary testing visualization
-demoMancala = prb.Game(prb.Mancala(), 1, 2)
-demoMancala.problem.showState()
+demoMancala = prb.Game(prb.Mancala(), alg.RandomAgent(),alg.RandomAgent())
+demoMancala.playGame()
