@@ -8,14 +8,12 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, FancyBboxPatch
 import random
 
-#TODO: implement a self.current_player for repeat turns. 
-#GetSuccessor should return a tuple with a extra_turn bool
-#Need to update TicTacToe to match I think so the same agent can run both. 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
       self.problem = problem      
       self.players = [pZero,pOne]   
-      self.verbose = verbose   
+      self.verbose = verbose
+        
       if self.verbose:
          self.problem.showState()               
     def playGame(self):
@@ -42,7 +40,7 @@ class Game:
 class TicTacToe:
    def __init__(self):
       self.state = np.zeros((3,3))      
-      self.ticks=-1 
+      self.ticks=-1
      
    def getLegalMoves(self, state=None):
       if state is None:
@@ -61,9 +59,9 @@ class TicTacToe:
       mark = move[0]
       loc = move[1]
       state[loc] = mark
-      return state
+      return state, False #extra turn marker, adding for consistency with Mancala?
    def doMove(self,move):
-      self.state = self.getSuccessor(move,self.state)
+      self.state, extraMove = self.getSuccessor(move,self.state)
       self.ticks+=1
    def isTerminal(self, state=None):
       if state is None:
@@ -138,7 +136,7 @@ class Mancala:
          for i in range(7,13):
             if state[i] > 0:
                moves.append(i)
-
+      print(moves)
       return moves
 
    def getSuccessor(self, move, state):
@@ -150,7 +148,7 @@ class Mancala:
       current_pit = move
       state[move] = 0
       get_to_steal = False
-      extra_move = False
+      extraMove = False
       marbs_stolen = 0
 
       #Disburse in the subsequent pits
@@ -178,8 +176,8 @@ class Mancala:
                get_to_steal = True
 
       #Now, check and see if current pit is the store (get another move)
-      if current_pit == 6 or current_pit == 13:
-         extra_move = True #I think I need to return this? Or call get legal moves and successor again from this func
+      if current_pit == 6 or current_pit == -1:
+         extraMove = True 
 
       #If the current pit is in one that used to be empty - take opponents marbles plus the one that landed there
       if get_to_steal == True:
@@ -193,17 +191,17 @@ class Mancala:
          else:
             state[13] += marbs_stolen + 1
 
-      return state #TODO ALSO EXTRA MOVE
+      return state, extraMove
 
    def doMove(self, move):
       #Apply the move the the board, update the move counter, update which player's turn it is
-      self.state = self.getSuccessor(move,self.state)
+      self.state, extraMove = self.getSuccessor(move,self.state)
       self.ticks+=1
+      print(f"Player {self.turn} is going")
       #Switch the player turn
-      if self.turn == 0:
-         self.turn = 1
-      else:
-         self.turn = 0
+      if extraMove == False:
+         self.turn = abs(self.turn - 1)
+
 
    def isTerminal(self, state=None):
       if state is None:
@@ -213,7 +211,6 @@ class Mancala:
       #Val is set in the evalterminal function based on the who cleared their side
       if val != 0:
          terminal = True
-      print(terminal)
       return terminal
 
    def evalTerminal(self, state=None):
@@ -245,10 +242,8 @@ class Mancala:
       val = self.evalTerminal(state)
       #Change the win values to indicate which player # won. -1 is a tie. 
       if val==1:
-         print("Player 0 won")
          return 0 
       elif val==-1:
-         print("Player 1 won")
          return 1
       else:
          print("Tie")
@@ -282,7 +277,7 @@ class Mancala:
          else: horz_spot = pit_num
          #For all pits except the stores, draw...
          if (pit_num != 6 and pit_num != 13):
-            print(f"Pit {pit_num} is at ({horz_spot}, {vert_spot}) with {self.state[pit_num]} marbles.")
+            #print(f"Pit {pit_num} is at ({horz_spot}, {vert_spot}) with {self.state[pit_num]} marbles.")
             circ = Circle([horz_spot, vert_spot], radius = 0.4, color = '#d1bd9b')
             ax.add_patch(circ)
 
@@ -296,8 +291,8 @@ class Mancala:
          #Add numbers of marbles
          ax.annotate(str(pit_num), [horz_spot, vert_spot], fontsize = 9)
       plt.savefig("test_board.png", bbox_inches = 'tight')
-      plt.show(block = False)  
-      plt.pause(ms/1000)
+      #plt.show(block = False)  
+      plt.pause(ms/3000)
       plt.close()
       
 
