@@ -7,6 +7,6 @@ class RandomAgent:
   def __str__(self):
     return "Random Agent"
   def getMove(self, problem):
-    moves = problem.getLegalMoves()
+    moves= problem.getLegalMoves(problem.turn)
     return moves[random.randrange(len(moves))]
   

@@ -18,14 +18,15 @@ class Game:
          self.problem.showState()               
     def playGame(self):
       pCur=0
-      while self.problem.isTerminal()==False:           
+      while self.problem.isTerminal()==False:
+         pCur=self.problem.turn           
          move = self.players[pCur].getMove(self.problem)           
          self.problem.doMove(move)
          if self.verbose:
             self.problem.showState()
             print(f"Move {self.problem.ticks}:")
             print(self.problem.state)
-         pCur = np.abs(pCur-1)
+         
         
       wIndex = self.problem.getWinner()
       winner = self.players[wIndex]
@@ -41,8 +42,9 @@ class TicTacToe:
    def __init__(self):
       self.state = np.zeros((3,3))      
       self.ticks=-1
+      self.turn = 0
      
-   def getLegalMoves(self, state=None):
+   def getLegalMoves(self, turn=None, state=None):
       if state is None:
          state = self.state
       moves = []
@@ -55,14 +57,15 @@ class TicTacToe:
                moves.append((mark,(i,j)))
                #Adding a mark for a player + a move location, random agent just picks one of the options
       return moves             
-   def getSuccessor(self, move, state):
+   def getSuccessor(self, move, turn, state):
       mark = move[0]
       loc = move[1]
       state[loc] = mark
-      return state, False #extra turn marker, adding for consistency with Mancala?
+      return state, False, turn #Adding for consistency with Mancala
    def doMove(self,move):
-      self.state, extraMove = self.getSuccessor(move,self.state)
+      self.state, extraMove, turn = self.getSuccessor(move, self.turn, self.state)
       self.ticks+=1
+      self.turn = abs(self.turn - 1)
    def isTerminal(self, state=None):
       if state is None:
          state = self.state         
@@ -124,22 +127,22 @@ class Mancala:
       self.ticks = -1 #Shows actual move number, including extra turns
       self.turn = 0 #Shows which player's turn it is, alternates between zero and one   
 
-   def getLegalMoves(self, state=None):
+   def getLegalMoves(self, turn, state=None):
       if state is None:
          state = self.state
       moves = [] #Add in potential marbles to pick up
-      if self.turn == 0: #Player 0's turn
+      if turn == 0: #Player 0's turn
          for i in range(6):
             if state[i] > 0:
                moves.append(i)
-      else: #PLayer 1's turn
+      else: #Player 1's turn
          for i in range(7,13):
             if state[i] > 0:
                moves.append(i)
       print(moves)
       return moves
 
-   def getSuccessor(self, move, state):
+   def getSuccessor(self, move, turn, state):
       #Move is just a int location in the array
       marb_count = state[move]
       print(f"{marb_count} marbles in this chosen move")
@@ -156,7 +159,7 @@ class Mancala:
          current_pit += 1
          
          #Add marbles to everywhere but the opposing player's store
-         if self.turn == 0:
+         if turn == 0:
             if current_pit != 13:
                state[current_pit] += 1
                marb_count -= 1
@@ -170,9 +173,9 @@ class Mancala:
             current_pit = -1
 
       #For each player, check and see if they landed in an empty pit on their own side (marb count now = 1), get to steal
-      if self.turn == 0 and state[current_pit] == 1 and current_pit in range(0,6):
+      if turn == 0 and state[current_pit] == 1 and current_pit in range(0,6):
          get_to_steal = True
-      if self.turn == 1 and state[current_pit] == 1 and current_pit in range(7,13):
+      if turn == 1 and state[current_pit] == 1 and current_pit in range(7,13):
                get_to_steal = True
 
       #Now, check and see if current pit is the store (get another move)
@@ -187,21 +190,22 @@ class Mancala:
             state[opposite_pit] = 0 #Take them out
             state[current_pit] = 0 #Take out last placed marble as well
             #Place them in the correct player store, as well as the last marble in the current pit
-            if self.turn == 0:
+            if turn == 0:
                state[6] += marbs_stolen + 1
             else:
                state[13] += marbs_stolen + 1
 
-      return state, extraMove
+      if extraMove == False:
+         turn = abs(turn - 1)
+
+      return state, extraMove, turn
 
    def doMove(self, move):
       #Apply the move the the board, update the move counter, update which player's turn it is
-      self.state, extraMove = self.getSuccessor(move,self.state)
+      self.state, extraMove, self.turn = self.getSuccessor(move, self.turn, self.state)
       self.ticks+=1
       print(f"Player {self.turn} is going")
-      #Switch the player turn
-      if extraMove == False:
-         self.turn = abs(self.turn - 1)
+
 
 
    def isTerminal(self, state=None):
@@ -248,7 +252,7 @@ class Mancala:
          print("Tie")
          return -1
 
-   #TODO need to implement cv2
+   #TODO need to implement cv2, sweep?
    def showState(self, ms = 1000, state=None):
       random.seed(27)
       fig, ax = plt.subplots(figsize = (7,3))
