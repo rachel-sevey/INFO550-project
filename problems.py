@@ -183,13 +183,14 @@ class Mancala:
       if get_to_steal == True:
          opposite_pit = 12 - current_pit
          marbs_stolen = state[opposite_pit]
-         state[opposite_pit] = 0 #Take them out
-         state[current_pit] = 0 #Take out last placed marble as well
-         #Place them in the correct player store, as well as the last marble in the current pit
-         if self.turn == 0:
-            state[6] += marbs_stolen + 1
-         else:
-            state[13] += marbs_stolen + 1
+         if marbs_stolen > 0:
+            state[opposite_pit] = 0 #Take them out
+            state[current_pit] = 0 #Take out last placed marble as well
+            #Place them in the correct player store, as well as the last marble in the current pit
+            if self.turn == 0:
+               state[6] += marbs_stolen + 1
+            else:
+               state[13] += marbs_stolen + 1
 
       return state, extraMove
 
