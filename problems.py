@@ -210,31 +210,29 @@ class Mancala:
       terminal = False
       val = self.evalTerminal(state)
       #Val is set in the evalterminal function based on the who cleared their side
-      if val != 0:
+      if val != None:
          terminal = True
       return terminal
 
    def evalTerminal(self, state=None):
       if state is None:
          state = self.state
-      val = 0
+      val = None
 
-      #First, clear board entirely if one player cleared their side
-      if sum(state[0:6]) == 0:
-         #Player 0 cleared first, player 1 gets whatever is left on their own side
-         state[13] += sum(state[7:13])
-         state[7:13] = 0
-      elif sum(state[7:13]) == 0:
-         #Player 1 cleared first, player 0 gets whatever is left on their own side
-         state[6] += sum(state[0:6])
-         state[0:6] = 0
-      else: return val
+      if sum(state[0:6]) != 0 and sum(state[7:13]) != 0:
+         return val
 
-      #Now, if both sides are cleared, check the winner. val = 1 for player 0 win, -1 for player 1, 0 for tie
-      if state[6] > state[13]:
+      else:
+         player0marbs = sum(state[0:7])
+         player1marbs = sum(state[7:14])
+
+      #Now, if both sides are cleared, check the winner. val = 1 for player 0 win, -1 for player 1, 2 for tie
+      if player0marbs > player1marbs:
          val = 1
-      elif state[13] > state[6]:
+      elif player1marbs > player0marbs:
          val = -1
+      else:
+         val = 0 #Tie
       return val
 
    def getWinner(self, state=None):
