@@ -243,6 +243,12 @@ class Mancala:
       if state is None:
          state = self.state
       val = self.evalTerminal(state)
+      #Resolve all the rest of the marbles for visualization
+      state[6] = sum(state[0:7])
+      state[0:6] = 0
+      state[13] = sum(state[7:14])
+      state[7:13] = 0
+
       #Change the win values to indicate which player # won. -1 is a tie. 
       if val==1:
          return 0 
@@ -252,53 +258,37 @@ class Mancala:
          print("Tie")
          return -1
 
-   #TODO need to implement cv2, sweep?
+
    def showState(self, ms = 1000, state=None):
       random.seed(27)
-      fig, ax = plt.subplots(figsize = (7,3))
-      ax.set_xlim(-2, 7)
-      ax.set_ylim(-1, 2)
-      plt.axis('off')
-      ax.set_aspect('equal')
-
-      #Create board
-      board = FancyBboxPatch((-1.4,-0.3), 7.8, 1.6, boxstyle = 'round', color = '#e8d9c4')
-      left_store = FancyBboxPatch((-1.1,-0.1), 0.15, 1.2, boxstyle = 'round', color = '#d1bd9b')
-      right_store = FancyBboxPatch((6,-0.1), 0.15, 1.2, boxstyle = 'round', color = '#d1bd9b')
-      ax.add_patch(board)
-      ax.add_patch(left_store)
-      ax.add_patch(right_store)
-
-      #Fill board with pits
-      vert_spot = 0
+      colors = [(36, 36, 160), (72, 135, 60), (135, 121, 60), (158, 62, 128), (40, 146, 219)]
+      screen = np.zeros((300, 890, 3)).astype(np.uint8)
+      screen = cv2.rectangle(screen, (0, 0), (890, 300), (196, 217, 232), -1)
+      screen = cv2.rectangle(screen, (45, 45), (135, 245), (155, 189, 209), -1)
+      screen = cv2.rectangle(screen, (765, 45), (855, 245), (155, 189, 209), -1)
       for pit_num in range(len(self.state)):
-         if pit_num > 6: vert_spot = 1
-         if pit_num > 6:
-            #Opposite side pits go from right to left
-            horz_spot = 12 - pit_num
-         #Close side pits go from left to right
-         else: horz_spot = pit_num
+         if pit_num > 6: 
+            vert_spot = 90
+            horz_spot = (12 - pit_num)*100 + 200 #Opposite side pits go from right to left
+            text_vert = vert_spot - 50
+         else: 
+            horz_spot = pit_num*100 + 200
+            vert_spot = 200
+            text_vert = vert_spot + 70
          #For all pits except the stores, draw...
          if (pit_num != 6 and pit_num != 13):
             #print(f"Pit {pit_num} is at ({horz_spot}, {vert_spot}) with {self.state[pit_num]} marbles.")
-            circ = Circle([horz_spot, vert_spot], radius = 0.4, color = '#d1bd9b')
-            ax.add_patch(circ)
+            screen = cv2.circle(screen, (horz_spot, vert_spot), (45), (155, 189, 209), -1)
 
-         #Fill pits and stores with marbles
+         offset_x = 0
+         offset_y = 0
          for m in range(self.state[pit_num]):
-            random_x = random.uniform(-0.2, 0.2)
-            random_y = random.uniform(-0.2, 0.2)
-            marb = Circle([horz_spot + random_x, vert_spot + random_y], radius = 0.13, facecolor = "#2c659b", edgecolor = "#1a5083", alpha = 0.5)
-            ax.add_patch(marb)
+            color = random.sample(colors, 1)
+            screen = cv2.circle(screen, (horz_spot + offset_x, vert_spot+ offset_y), (12), color[0], -1)
+            offset_x = int(random.uniform(-25, 25))
+            offset_y = int(random.uniform(-25, 25))
+         font = cv2.FONT_HERSHEY_SIMPLEX
+         cv2.putText(screen, str(self.state[pit_num]), (horz_spot, text_vert), font, 1, (0,0,0), 1, cv2.LINE_AA)
+      cv2.imshow('Mancala', screen)
+      cv2.waitKey(ms)
 
-         #Add numbers of marbles
-         ax.annotate(str(pit_num), [horz_spot, vert_spot], fontsize = 9)
-      plt.savefig("test_board.png", bbox_inches = 'tight')
-      #plt.show(block = False)  
-      plt.pause(ms/3000)
-      plt.close()
-      
-
-
-   
-      
