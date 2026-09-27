@@ -18,6 +18,10 @@ class Game:
          self.problem.showState()               
     def playGame(self):
       pCur=0
+      if self.verbose:
+         self.problem.showState()
+         print(f"Move {self.problem.ticks}:")
+         print(self.problem.state)
       while self.problem.isTerminal()==False:
          pCur=self.problem.turn           
          move = self.players[pCur].getMove(self.problem)           
@@ -33,8 +37,9 @@ class Game:
       if wIndex == -1:
          winner = "DRAW"
       #display final state
-      print(f"The Winner is {winner} ({wIndex})!")
+      
       if self.verbose:
+         print(f"The Winner is {winner} ({wIndex})!")
          self.problem.showState(4000)
       return wIndex
               
@@ -139,13 +144,14 @@ class Mancala:
          for i in range(7,13):
             if state[i] > 0:
                moves.append(i)
-      print(moves)
+      #print(f"Player {self.turn} is going")
+      #print(f"Available moves: {moves}")
       return moves
 
    def getSuccessor(self, move, turn, state):
       #Move is just a int location in the array
       marb_count = state[move]
-      print(f"{marb_count} marbles in this chosen move")
+      #print(f"{marb_count} marbles in this chosen move\n\n")
 
       #Take out the marbles
       current_pit = move
@@ -204,7 +210,7 @@ class Mancala:
       #Apply the move the the board, update the move counter, update which player's turn it is
       self.state, extraMove, self.turn = self.getSuccessor(move, self.turn, self.state)
       self.ticks+=1
-      print(f"Player {self.turn} is going")
+
 
 
 
@@ -255,12 +261,11 @@ class Mancala:
       elif val==-1:
          return 1
       else:
-         print("Tie")
          return -1
 
 
    def showState(self, ms = 1000, state=None):
-      random.seed(27)
+      #random.seed(27)
       colors = [(36, 36, 160), (72, 135, 60), (135, 121, 60), (158, 62, 128), (40, 146, 219)]
       screen = np.zeros((300, 890, 3)).astype(np.uint8)
       screen = cv2.rectangle(screen, (0, 0), (890, 300), (196, 217, 232), -1)
