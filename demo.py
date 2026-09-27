@@ -1,5 +1,6 @@
 import problems as prb
 import algorithms as alg
+import random
 
 '''
 This file will contain the code needed to run a demonstration of your project. 
@@ -18,6 +19,16 @@ algorithm and one player uses another. If your problem is snake, you might show 
 #demoGame = prb.Game(prb.TicTacToe(),alg.RandomAgent(),alg.RandomAgent())
 #demoGame.playGame()
 
-#Temporary testing visualization
-demoMancala = prb.Game(prb.Mancala(), alg.RandomAgent(),alg.RandomAgent())
-demoMancala.playGame()
+#demoMancala = prb.Game(prb.Mancala(), alg.RandomAgent(),alg.RandomAgent())
+#demoMancala.playGame()
+
+
+score = []
+for i in range(20):
+    demoMancala = prb.Game(prb.Mancala(), alg.GreedyAgent(),alg.RandomAgent(), verbose = False)
+    winner = demoMancala.playGame()
+    score.append(winner)
+
+print(f"Random Agent Zero won {score.count(0)} times")
+print(f"Random Agent One won {score.count(1)} times")
+print(f"Random Agents tied {score.count(-1)} times")
