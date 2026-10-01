@@ -20,17 +20,19 @@ class Game:
       pCur=0
       if self.verbose:
          self.problem.showState()
-         print(f"Move {self.problem.ticks}:")
          print(self.problem.state)
+         
       while self.problem.isTerminal()==False:
-         pCur=self.problem.turn           
+         pCur=self.problem.turn
+         if self.verbose:
+            self.problem.showState()
+            print(f"Current player: {pCur}")           
          move = self.players[pCur].getMove(self.problem)           
          self.problem.doMove(move)
          if self.verbose:
-            self.problem.showState()
             print(f"Move {self.problem.ticks}:")
             print(self.problem.state)
-         
+            print()         
         
       wIndex = self.problem.getWinner()
       winner = self.players[wIndex]
@@ -264,7 +266,7 @@ class Mancala:
          return -1
 
 
-   def showState(self, ms = 1000, state=None):
+   def showState(self, ms = 500, state=None):
       #random.seed(27)
       colors = [(36, 36, 160), (72, 135, 60), (135, 121, 60), (158, 62, 128), (40, 146, 219)]
       screen = np.zeros((300, 890, 3)).astype(np.uint8)
