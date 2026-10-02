@@ -2,6 +2,7 @@
 This file will contain implementations of each algorithm/agent type.
 '''
 import random
+import sys
 
 class RandomAgent:
   def __str__(self):
@@ -62,3 +63,15 @@ class MostMarbsToStore: #Counts the difference between the store after a move, s
     if loc is not None:
         return loc
     return moves[random.randrange(len(moves))]
+
+class Human:
+    def __str__(self):
+      return "Human"
+    def getMove(self, problem):
+      moves = problem.getLegalMoves(problem.turn)
+      m = int(input("Please choose your move by entering an integer from 0 to 5: "))
+      if m in moves:
+        return m
+      else: 
+        print("Invalid, choosing a random move")
+        return moves[random.randrange(len(moves))]

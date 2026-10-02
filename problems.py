@@ -266,7 +266,7 @@ class Mancala:
          return -1
 
 
-   def showState(self, ms = 500, state=None):
+   def showState(self, ms = 2000, state=None):
       #random.seed(27)
       colors = [(36, 36, 160), (72, 135, 60), (135, 121, 60), (158, 62, 128), (40, 146, 219)]
       screen = np.zeros((300, 890, 3)).astype(np.uint8)

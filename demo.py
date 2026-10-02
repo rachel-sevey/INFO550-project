@@ -19,10 +19,10 @@ algorithm and one player uses another. If your problem is snake, you might show 
 #demoGame = prb.Game(prb.TicTacToe(),alg.RandomAgent(),alg.RandomAgent())
 #demoGame.playGame()
 
-#demoMancala = prb.Game(prb.Mancala(), alg.MostMarbsToStore(),alg.RandomAgent())
-#demoMancala.playGame()
+demoMancala = prb.Game(prb.Mancala(), alg.Human(),alg.MostMarbsToStore())
+demoMancala.playGame()
 
-#'''
+'''
 score = []
 for i in range(5000):
     demoMancala = prb.Game(prb.Mancala(), alg.MostMarbsToStore(),alg.ExtraMove(), verbose = False)
@@ -40,4 +40,4 @@ for i in range(5000):
 print(f"Random Agent Zero won {score.count(0)} times")
 print(f"Random Agent One won {score.count(1)} times")
 print(f"Random Agents tied {score.count(-1)} times")
-#'''
+'''
