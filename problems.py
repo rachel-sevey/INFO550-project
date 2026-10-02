@@ -204,7 +204,7 @@ class Mancala:
                state[13] += marbs_stolen + 1
 
       if extraMove == False:
-         turn = abs(turn - 1)
+         turn = abs(turn - 1) #Only switch turn value if the extra move wasn't earned
 
       return state, extraMove, turn
 

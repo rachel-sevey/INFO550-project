@@ -7,4 +7,4 @@ BiggestPot      RandomAgent      10000      4783       4556        661
 ExtraMove       RandomAgent      10000      7925       1667        408      
 ExtraMove       BiggestPot       10000      8602       1061        337
 MostMarbsToStore Random          10000      9469       400         131
-MostMarbs       ExtraMove        10000      7791       1789        420
+MostMarbsToStore ExtraMove       10000      7791       1789        420

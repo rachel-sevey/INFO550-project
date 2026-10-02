@@ -19,7 +19,7 @@ algorithm and one player uses another. If your problem is snake, you might show 
 #demoGame = prb.Game(prb.TicTacToe(),alg.RandomAgent(),alg.RandomAgent())
 #demoGame.playGame()
 
-demoMancala = prb.Game(prb.Mancala(), alg.Human(),alg.MostMarbsToStore())
+demoMancala = prb.Game(prb.Mancala(), alg.Minimax(),alg.RandomAgent())
 demoMancala.playGame()
 
 '''
