@@ -104,7 +104,7 @@ class Minimax:
         else: return 0
 
       #Not terminal, check depth
-      if depth == 3:
+      if depth >= 3:
         #run evaluation function TODO, this one is temporary
         if player_to_max == 0:
           utility = state[6] - state[13]
@@ -115,10 +115,10 @@ class Minimax:
       #Not depth 5, run more recursion
       moves = problem.getLegalMoves(turn, state)
       results = []
+      depth +=1
       for m in moves:
-        state_copy = problem.state.copy()
+        state_copy = state.copy()
         state, extraMove, turn =  problem.getSuccessor(m, turn, state_copy)
-        depth+=1 #Only do this in max
         #Call min value? with new moves from current state and new depth?
         #UNLESS YOU GET AN EXTRA TURN, THEN CALL YOURSELF??
         results.append(self.minValue(problem, state, player_to_max, turn, depth))
@@ -127,7 +127,7 @@ class Minimax:
     def minValue(self, problem, state, player_to_max, turn, depth):
       utility = math.inf
       #Check terminal here?
-      if problem.isTerminal() == True:
+      if problem.isTerminal(state) == True:
         winner = problem.getWinner(state)
         #See if the other player won
         if winner == player_to_max:
@@ -137,7 +137,7 @@ class Minimax:
         else: return 0
 
       #Not terminal, check depth
-      if depth == 3:
+      if depth >= 3:
         #run evaluation function TODO, this one is temporary
         if player_to_max == 0:
           utility = state[13] - state[6] #Opposite the max function
@@ -153,4 +153,4 @@ class Minimax:
         state, extraMove, turn =  problem.getSuccessor(m, turn, state_copy)
         #Call min value? with new moves from current state and new depth?
         results.append(self.maxValue(problem, state, player_to_max, turn, depth))
-        return min(results)
+      return min(results)
