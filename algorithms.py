@@ -89,7 +89,23 @@ class Minimax:
       player_to_max = problem.turn #Figure out which side we're on (that we want to max)
       turn = problem.turn #Use this to take turns
       depth = 0
-      return self.maxValue(problem, problem.state, player_to_max, turn, depth)
+
+      state = problem.state.copy()
+      moves = problem.getLegalMoves(turn, state)
+      results = []
+      best_move = 0
+      max_utility = -math.inf
+      for m in moves:
+        state_copy = state.copy()
+        new_state, extraMove, new_turn =  problem.getSuccessor(m, turn, state_copy)
+        #Call min value? with new moves from current state and new depth?
+        #UNLESS YOU GET AN EXTRA TURN, THEN CALL YOURSELF??
+        utility = (self.minValue(problem, new_state, player_to_max, new_turn, depth))
+        results.append(utility)
+        if utility > max_utility:
+          max_utility = utility
+          best_move = m
+      return best_move
 
     def maxValue(self, problem, state, player_to_max, turn, depth):
       utility = -math.inf
@@ -118,10 +134,10 @@ class Minimax:
       depth +=1
       for m in moves:
         state_copy = state.copy()
-        state, extraMove, turn =  problem.getSuccessor(m, turn, state_copy)
+        new_state, extraMove, new_turn =  problem.getSuccessor(m, turn, state_copy)
         #Call min value? with new moves from current state and new depth?
         #UNLESS YOU GET AN EXTRA TURN, THEN CALL YOURSELF??
-        results.append(self.minValue(problem, state, player_to_max, turn, depth))
+        results.append(self.minValue(problem, new_state, player_to_max, new_turn, depth))
       return max(results)
        
     def minValue(self, problem, state, player_to_max, turn, depth):
@@ -150,7 +166,7 @@ class Minimax:
       results = []
       for m in moves:
         state_copy = state.copy()
-        state, extraMove, turn =  problem.getSuccessor(m, turn, state_copy)
+        new_state, extraMove, new_turn =  problem.getSuccessor(m, turn, state_copy)
         #Call min value? with new moves from current state and new depth?
-        results.append(self.maxValue(problem, state, player_to_max, turn, depth))
+        results.append(self.maxValue(problem, new_state, player_to_max, new_turn, depth))
       return min(results)
