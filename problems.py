@@ -13,9 +13,7 @@ class Game:
       self.problem = problem      
       self.players = [pZero,pOne]   
       self.verbose = verbose
-        
-      if self.verbose:
-         self.problem.showState()               
+                       
     def playGame(self):
       pCur=0
       if self.verbose:
@@ -214,8 +212,6 @@ class Mancala:
       self.ticks+=1
 
 
-
-
    def isTerminal(self, state=None):
       if state is None:
          state = self.state         
@@ -238,7 +234,7 @@ class Mancala:
          player0marbs = sum(state[0:7])
          player1marbs = sum(state[7:14])
 
-      #Now, if both sides are cleared, check the winner. val = 1 for player 0 win, -1 for player 1, 2 for tie
+      #Now, if both sides are cleared, check the winner. val = 1 for player 0 win, -1 for player 1, 0 for tie
       if player0marbs > player1marbs:
          val = 1
       elif player1marbs > player0marbs:
@@ -266,7 +262,7 @@ class Mancala:
          return -1
 
 
-   def showState(self, ms = 2000, state=None):
+   def showState(self, ms = 1000, state=None):
       #random.seed(27)
       colors = [(36, 36, 160), (72, 135, 60), (135, 121, 60), (158, 62, 128), (40, 146, 219)]
       screen = np.zeros((300, 890, 3)).astype(np.uint8)
