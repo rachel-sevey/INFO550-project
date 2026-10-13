@@ -80,10 +80,6 @@ class Human:
 class Minimax:
     def __str__(self):
       return "Minimax"
-
-    #TODO: sort out extra moves/turn counting
-    #TODO: draw flowchart
-
     
     def getMove(self, problem):
       player_to_max = problem.turn #Figure out which side we're on (that we want to max)
@@ -93,22 +89,25 @@ class Minimax:
       state = problem.state.copy()
       moves = problem.getLegalMoves(turn, state)
       results = []
-      best_move = 0
+      best_move = moves[random.randrange(len(moves))] #Start with random valid so it doesn't default to invalid 0 if nothing is found
       max_utility = -math.inf
       for m in moves:
         state_copy = state.copy()
         new_state, extraMove, new_turn =  problem.getSuccessor(m, turn, state_copy)
-        #Call min value? with new moves from current state and new depth?
-        #UNLESS YOU GET AN EXTRA TURN, THEN CALL YOURSELF??
-        utility = (self.minValue(problem, new_state, player_to_max, new_turn, depth))
-        results.append(utility)
+        #Call min unless extraMove
+        if extraMove == True:
+          utility = (self.maxValue(problem, new_state, player_to_max, new_turn, depth))
+          results.append(utility)
+        else:
+          utility = (self.minValue(problem, new_state, player_to_max, new_turn, depth))
+          results.append(utility)
         if utility > max_utility:
           max_utility = utility
           best_move = m
       return best_move
 
     def maxValue(self, problem, state, player_to_max, turn, depth):
-      utility = -math.inf
+      utility = 0
       #Check terminal here?
       if problem.isTerminal(state) == True:
         winner = problem.getWinner(state)
@@ -120,7 +119,7 @@ class Minimax:
         else: return 0
 
       #Not terminal, check depth
-      if depth >= 3:
+      if depth >= 4:
         #run evaluation function TODO, this one is temporary
         if player_to_max == 0:
           utility = state[6] - state[13]
@@ -135,38 +134,43 @@ class Minimax:
       for m in moves:
         state_copy = state.copy()
         new_state, extraMove, new_turn =  problem.getSuccessor(m, turn, state_copy)
-        #Call min value? with new moves from current state and new depth?
-        #UNLESS YOU GET AN EXTRA TURN, THEN CALL YOURSELF??
-        results.append(self.minValue(problem, new_state, player_to_max, new_turn, depth))
+
+        if extraMove == True:
+          results.append(self.maxValue(problem, new_state, player_to_max, new_turn, depth))
+        else:
+          results.append(self.minValue(problem, new_state, player_to_max, new_turn, depth))
       return max(results)
        
     def minValue(self, problem, state, player_to_max, turn, depth):
-      utility = math.inf
+      utility = 0
       #Check terminal here?
       if problem.isTerminal(state) == True:
         winner = problem.getWinner(state)
         #See if the other player won
         if winner == player_to_max:
-           return -math.inf
-        elif winner == abs(player_to_max-1):
            return math.inf
+        elif winner == abs(player_to_max-1):
+           return -math.inf
         else: return 0
 
       #Not terminal, check depth
-      if depth >= 3:
+      if depth >= 4:
         #run evaluation function TODO, this one is temporary
         if player_to_max == 0:
-          utility = state[13] - state[6] #Opposite the max function
-        else: #player is 1
           utility = state[6] - state[13]
+        else: #player is 1
+          utility = state[13] - state[6]
         return utility
 
       #Not depth 5, run more recursion
       moves = problem.getLegalMoves(turn, state)
       results = []
+      depth +=1
       for m in moves:
         state_copy = state.copy()
         new_state, extraMove, new_turn =  problem.getSuccessor(m, turn, state_copy)
-        #Call min value? with new moves from current state and new depth?
-        results.append(self.maxValue(problem, new_state, player_to_max, new_turn, depth))
+        if extraMove == True:
+          results.append(self.minValue(problem, new_state, player_to_max, new_turn, depth))
+        else:
+          results.append(self.maxValue(problem, new_state, player_to_max, new_turn, depth))
       return min(results)
