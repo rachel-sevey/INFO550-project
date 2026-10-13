@@ -19,25 +19,26 @@ algorithm and one player uses another. If your problem is snake, you might show 
 #demoGame = prb.Game(prb.TicTacToe(),alg.RandomAgent(),alg.RandomAgent())
 #demoGame.playGame()
 
-demoMancala = prb.Game(prb.Mancala(), alg.Minimax(),alg.RandomAgent())
-demoMancala.playGame()
+#demoMancala = prb.Game(prb.Mancala(), alg.Minimax(),alg.RandomAgent())
+#demoMancala.playGame()
 
-'''
+
 score = []
-for i in range(5000):
-    demoMancala = prb.Game(prb.Mancala(), alg.MostMarbsToStore(),alg.ExtraMove(), verbose = False)
+player_0 = alg.Minimax()
+player_1 = alg.MostMarbsToStore()
+for i in range(500):
+    demoMancala = prb.Game(prb.Mancala(), player_0, player_1, verbose = False)
     winner = demoMancala.playGame()
     score.append(winner)
     #Swap to remove first-player effect
-    demoMancala_switch = prb.Game(prb.Mancala(), alg.ExtraMove(),alg.MostMarbsToStore(), verbose = False)
+    demoMancala_switch = prb.Game(prb.Mancala(), player_1, player_0, verbose = False)
     winner = demoMancala_switch.playGame()
-    if winner == -1:
+    if winner == -1: #Tie, no swap necessary
         score.append(winner)
     else:
         winner = abs(winner - 1)
         score.append(winner)
 
-print(f"Random Agent Zero won {score.count(0)} times")
-print(f"Random Agent One won {score.count(1)} times")
-print(f"Random Agents tied {score.count(-1)} times")
-'''
+print(f"{player_0} won {score.count(0)} times")
+print(f"{player_1} won {score.count(1)} times")
+print(f"Agents tied {score.count(-1)} times")
