@@ -8,8 +8,8 @@ ExtraMove       RandomAgent      10000      7925       1667        408
 ExtraMove       BiggestPot       10000      8602       1061        337
 MostMarbsToStore Random          10000      9469       400         131
 MostMarbsToStore ExtraMove       10000      7791       1789        420
-Minimax1        MostMarbs        1000       984        16          0
-Minimax2        MostMarbs        1000       943        50          7
+Minimax2        MostMarbs        1000       1000       0           0            (Avg ratio of marbles: 31.33:16.67)
+Minimax3        MostMarbs        1000       1000       0           0            (Avg ratio of marbles: 30.39:17.61)
 
-#Minimax1 is depth 3 and uses an evaluation function that counts the diff between stores.
-#Minimax2 is depth 4 and uses an evaluation function that counts the diff between stores.
+#Minimax2 is depth 2 and uses an evaluation function that counts the diff between stores.
+#Minimax3 is depth 3 and uses an evaluation function that counts the diff between stores.
