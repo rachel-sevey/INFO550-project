@@ -41,7 +41,9 @@ class Game:
       if self.verbose:
          print(f"The Winner is {winner} ({wIndex})!")
          self.problem.showState(4000)
-      return wIndex
+      marbs_0 = self.problem.state[6]
+      marbs_1 = self.problem.state[13]
+      return wIndex, marbs_0, marbs_1
               
 class TicTacToe:
    def __init__(self):
