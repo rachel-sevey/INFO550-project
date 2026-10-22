@@ -16,16 +16,16 @@ class Game:
                        
     def playGame(self):
       pCur=0
-      if self.verbose:
-         self.problem.showState()
-         print(self.problem.state)
+      move = None
          
       while self.problem.isTerminal()==False:
          pCur=self.problem.turn
          if self.verbose:
-            self.problem.showState()
+            self.problem.showState(move)
             print(f"Current player: {pCur}")           
-         move = self.players[pCur].getMove(self.problem)           
+         move = self.players[pCur].getMove(self.problem)    
+         if self.verbose:
+            self.problem.showState(move)       
          self.problem.doMove(move)
          if self.verbose:
             print(f"Move {self.problem.ticks}:")
@@ -264,7 +264,7 @@ class Mancala:
          return -1
 
 
-   def showState(self, ms = 1000, state=None):
+   def showState(self, move, ms = 1500, state=None):
       #random.seed(27)
       colors = [(36, 36, 160), (72, 135, 60), (135, 121, 60), (158, 62, 128), (40, 146, 219)]
       screen = np.zeros((300, 890, 3)).astype(np.uint8)
@@ -284,6 +284,8 @@ class Mancala:
          if (pit_num != 6 and pit_num != 13):
             #print(f"Pit {pit_num} is at ({horz_spot}, {vert_spot}) with {self.state[pit_num]} marbles.")
             screen = cv2.circle(screen, (horz_spot, vert_spot), (45), (155, 189, 209), -1)
+            if pit_num == move:
+               screen = cv2.circle(screen, (horz_spot, vert_spot), (45), (155, 189, 309), -1)  
 
          offset_x = 0
          offset_y = 0
